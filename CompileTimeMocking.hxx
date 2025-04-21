@@ -34,8 +34,10 @@
 
 //#define COMPILE_MOCK(methodName, returnType, ...) static returnType methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<returnType, ##__VA_ARGS__>(invocation);}
 
+#define CTM_CLASS(className) class className{ public: 
 #define COMPILE_MOCK(methodName, returnType, ...) static returnType methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<returnType, ##__VA_ARGS__>(invocation);}
-
+#define COMPILE_MOCK_VOID(methodName, ...) static void methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<void, ##__VA_ARGS__>(invocation);}
+#define CTM_CLASS_END };
 
 #pragma once
 #define MOCK_EXPORTS _declspec(dllexport)
@@ -147,7 +149,7 @@ namespace CompileTimeMocking {
 	template<class T>
 	class IsEqualMatcher : public CTMMatcher_Base {
 	public:
-		IsEqualMatcher(int pos, T match) : mValueToMatch{ match }, CTMMatcher_Base(pos){}
+		IsEqualMatcher(int pos, T match) : mValueToMatch{ match }, CTMMatcher_Base(pos) {}
 		int getArgumentPos() {
 			return mArgumentPos;
 		}
@@ -162,7 +164,7 @@ namespace CompileTimeMocking {
 
 	class CTMMatcherStatement_Base {
 	public:
-		CTMMatcherStatement_Base(void* method, std::vector<CTMMatcher_Base*> matchers) : mMethod{method}, mMatchers{matchers}{}
+		CTMMatcherStatement_Base(void* method, std::vector<CTMMatcher_Base*> matchers) : mMethod{ method }, mMatchers{ matchers } {}
 		bool templateResolutionMethod(std::vector<std::any>& arg) {
 			bool result = resolveStatement(arg);
 
@@ -375,6 +377,20 @@ namespace CompileTimeMocking {
 			}
 		}
 
+		template<class T>
+		void setupReturnQueueForStatement(const std::string& statementName, void* func, T returnVal) {
+
+			auto statements = mMatcherHandler.getMatcherStatementsForMethod(func);
+
+			for (auto statement : statements) {
+				if (statement->getStatementName() == statementName) {
+					CTMReturn<T>& ctmReturn = mMatcherHandler.getReturnForStatement<T>(statement);
+					ctmReturn.returnQueue.push(returnVal);
+					return;
+				}
+			}
+		}
+
 		void setMatcherDefaultReturnValue() {
 
 		}
@@ -384,39 +400,45 @@ namespace CompileTimeMocking {
 		//Ts - pack of CTMMatchers
 		template<class T, class S, class... Ts>
 		void setupMatcherStatement(void* func, S returnValue, Ts&&... matchers) {
-			//if the method has not been set up for mocking, throw an error.
-			//if (mRegisteredFuncs.find(func) == mRegisteredFuncs.end()) {
-			//	return;
-			//}
-
-			//std::vector<CTMMatcher_Base*> matcherVect;
-			//(matcherVect.emplace_back((CTMMatcher_Base*)matchers), ...);
-			//CTMMatcherStatement_Base* matcherStatement = new T(func, matcherVect);
-
-			//mMatcherHandler.registerMatcherStatement<S>(matcherStatement, "NoName");
-			//CTMReturn<S>& ctmReturn = mMatcherHandler.getReturnForStatement<S>(matcherStatement);
-			//ctmReturn.setDefaultValue(returnValue);
 
 			setupNamedMatcherStatement<T, S, Ts...>(std::string("NoName"), func, returnValue, std::forward<Ts>(matchers)...);
 		}
 		//T - StatementType
-		//S - Return type
 		//Ts - pack of CTMMatchers
 		template<class T, class S, class... Ts>
-		void setupNamedMatcherStatement(std::string& name, void* func, S returnValue,  Ts&&... matchers) {
+		std::enable_if_t<std::is_void_v<S>, void>
+	    setupNamedMatcherStatement(const std::string& name, void* func, Ts&&... matchers) {
 			//if the method has not been set up for mocking, throw an error.
 			if (mRegisteredFuncs.find(func) == mRegisteredFuncs.end()) {
 				return;
 			}
 
 			std::vector<CTMMatcher_Base*> matcherVect;
-			(matcherVect.emplace_back((CTMMatcher_Base*)matchers), ...);
+			(matcherVect.emplace_back((CTMMatcher_Base*)&matchers), ...);
+			CTMMatcherStatement_Base* matcherStatement = new T(func, matcherVect);
+
+			mMatcherHandler.registerMatcherStatement<S>(matcherStatement, name);
+			CTMReturn<S>& ctmReturn = mMatcherHandler.getReturnForStatement<S>(matcherStatement);
+		}
+		//T - StatementType
+		//S - Return type
+		//Ts - pack of CTMMatchers
+		template<class T, class S, class... Ts>
+		void setupNamedMatcherStatement(const std::string& name, void* func, S returnValue, Ts&&... matchers) {
+			//if the method has not been set up for mocking, throw an error.
+			if (mRegisteredFuncs.find(func) == mRegisteredFuncs.end()) {
+				return;
+			}
+
+			std::vector<CTMMatcher_Base*> matcherVect;
+			(matcherVect.emplace_back((CTMMatcher_Base*)&matchers), ...);
 			CTMMatcherStatement_Base* matcherStatement = new T(func, matcherVect);
 
 			mMatcherHandler.registerMatcherStatement<S>(matcherStatement, name);
 			CTMReturn<S>& ctmReturn = mMatcherHandler.getReturnForStatement<S>(matcherStatement);
 			ctmReturn.setDefaultValue(returnValue);
 		}
+
 
 		//T - return type
 		template <class T, class... Ts>
@@ -445,7 +467,7 @@ namespace CompileTimeMocking {
 			return returnVect;
 		}
 		template<class T>
-		std::vector<T*> getMatchingStatements(std::string& name) {
+		std::vector<T*> getMatchingStatements(const std::string& name) {
 			std::vector<T*> returnVect;
 			auto statements = mMatcherHandler.getMatcherStatementsForName(name);
 			for (auto state : statements) {
@@ -478,6 +500,13 @@ namespace CompileTimeMocking {
 
 		CTMInvocationHandler mInvocationHandler = CTMInvocationHandler();
 		CTMMatcherHandler mMatcherHandler = CTMMatcherHandler();
+	};
+
+	//a wrapper class designed to be a user friendly API
+	//Functionality should wrap the CTMHandler only
+	//no functionality should be added that isn't directly supported from the handler
+	class CTM2 {
+	public:
 	};
 
 	//base class used to relate all CTM classess
