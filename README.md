@@ -1,4 +1,4 @@
-CompileTimeMocking (CTM)
+# CTMock (Compile Time Mock)
 A fast, lightweight, compile-time safe C++ mocking framework — designed for projects where minimal runtime overhead and strong type guarantees matter.
 
 Overview
@@ -13,15 +13,15 @@ Ensure type safety at compile time.
 
 Modify behavior at runtime while keeping strong type guarantees.
 
-Key Features
-✅ Compile-time generation of mocks with minimal runtime dispatch.
-✅ Header-only, no build system changes required.
-✅ Mock static methods, free functions, and classes easily.
-✅ Flexible runtime return value management through matchers.
-✅ No dependency injection necessary for basic usage.
-✅ Safe for legacy codebases without heavy modification.
+# Key Features
+Compile-time generation of mocks with minimal runtime dispatch.
+Header-only, no build system changes required.
+Mock static methods, free functions, and classes easily.
+Flexible runtime return value management through matchers.
+No dependency injection necessary for basic usage.
+Safe for legacy codebases without heavy modification.
 
-Why CTM?
+# Why CTMock?
 Mocking frameworks like Google Mock (gMock) and others excel in many cases — particularly when full dynamic behavior or advanced runtime configuration is needed.
 
 CTM provides an alternative philosophy:
@@ -37,7 +37,7 @@ Built to mock existing systems without rewriting for abstract interfaces.
 Rather than replacing traditional frameworks, CTM complements them:
 Use the right tool for the right kind of project.
 
-Quick Example
+# Quick Examples
 Define a mock class:
 
 ```
@@ -69,7 +69,7 @@ Invocation Tracking: Automatically record call counts per method.
 
 Fine-grained control without losing performance.
 
-Installation
+# Installation
 CTM is header-only.
 
 Include the core .h file(s) in your project.
@@ -78,11 +78,11 @@ No library linking required.
 
 No dependencies outside the C++ standard library.
 
-cpp
-Copy
-Edit
+```
 #include "CompileTimeMocking.h" // Adjust the path as necessary
-Ideal Use Cases
+```
+
+# Ideal Use Cases
 CTM is a great fit for:
 
 Legacy C++ projects where refactoring for interfaces isn't practical.
@@ -93,7 +93,7 @@ Testing stateless utilities or static systems cleanly.
 
 Compile-time analysis and validation of mock structure.
 
-When to Consider Traditional Frameworks
+# When to Consider Traditional Frameworks
 While CTM covers many use cases, you might prefer frameworks like gMock or Trompeloeil if:
 
 You need to mock private or protected methods.
@@ -104,24 +104,16 @@ You prefer mocking based on abstract interfaces with rich runtime expectations.
 
 CTM and traditional frameworks serve different needs — it's all about choosing the best tool for your project.
 
-Roadmap
+# Roadmap
  Expand built-in matchers (IsGreaterThan, IsLessThan, etc.)
-
  Add support for mock actions (e.g., throw, invoke callbacks)
-
  Simplify setup macros even further
 
- Publish CMake package
 
- Add user-contributed examples
+# License
+MIT
 
-License
-(MIT License or your choice.)
-
-Contributions
-Pull requests, feature suggestions, and feedback are very welcome!
-
-If you have ideas for new matchers, better ergonomics, or integrations, please open an Issue or PR.
+If you have ideas for new matchers, matcher statements, better ergonomics, or integrations, please open an Issue or PR.
 
 ⭐ Star this repository if you find CTM useful!
 Together we can grow a modern alternative for C++ testing, one compile-time mock at a time.
