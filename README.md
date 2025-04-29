@@ -6,12 +6,9 @@ CompileTimeMocking (CTM) is a C++ header-only mocking library designed to make u
 Instead of relying on runtime polymorphism and traditional dependency injection, CTM uses compile-time templates and policies to generate mocks that are strongly typed and efficient.
 
 This approach allows developers to:
-
-Mock large systems without needing intrusive class refactoring.
-
-Ensure type safety at compile time.
-
-Modify behavior at runtime while keeping strong type guarantees.
+- Mock large systems without needing intrusive class refactoring.
+- Ensure type safety at compile time.
+- Modify behavior at runtime while keeping strong type guarantees.
 
 # Key Features
 - Compile-time generation of mocks with minimal runtime dispatch.
