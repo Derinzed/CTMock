@@ -14,25 +14,22 @@ Ensure type safety at compile time.
 Modify behavior at runtime while keeping strong type guarantees.
 
 # Key Features
-Compile-time generation of mocks with minimal runtime dispatch.
-Header-only, no build system changes required.
-Mock static methods, free functions, and classes easily.
-Flexible runtime return value management through matchers.
-No dependency injection necessary for basic usage.
-Safe for legacy codebases without heavy modification.
+- Compile-time generation of mocks with minimal runtime dispatch.
+- Header-only, no build system changes required.
+- Mock static methods, free functions, and classes easily.
+- Flexible runtime return value management through matchers.
+- No dependency injection necessary for basic usage.
+- Safe for legacy codebases without heavy modification.
 
 # Why CTMock?
 Mocking frameworks like Google Mock (gMock) and others excel in many cases — particularly when full dynamic behavior or advanced runtime configuration is needed.
 
 CTM provides an alternative philosophy:
 
-Focused on compile-time safety.
-
-Ideal for performance-sensitive, resource-constrained, or legacy projects.
-
-Designed for scenarios where dependency injection may not be feasible.
-
-Built to mock existing systems without rewriting for abstract interfaces.
+- Focused on compile-time safety.
+- Ideal for performance-sensitive, resource-constrained, or legacy projects.
+- Designed for scenarios where dependency injection may not be feasible.
+- Built to mock existing systems without rewriting for abstract interfaces.
 
 Rather than replacing traditional frameworks, CTM complements them:
 Use the right tool for the right kind of project.
