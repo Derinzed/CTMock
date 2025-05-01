@@ -40,9 +40,10 @@ CTM_CLASS(MockFilesystem)
     COMPILE_MOCK(is_directory, bool, const std::string)
     COMPILE_MOCK(all_directories, std::vector<std::string>, const std::string)
 CTM_CLASS_END
+```
 Set up expectations:
 
-
+```
 using namespace MetalFury::Mocks; // Or your namespace
 
 CTM_MOCK.setupForMocking(MockFilesystem::exists, true);
@@ -54,14 +55,12 @@ CTM_MOCK.setupForMocking(MockFilesystem::all_directories, fakeDirs);
 // Use in your tests
 MetalFury::Core::PluginSystem<MockFilesystem> pluginSystem;
 auto dirs = pluginSystem.getPluginsInDirectory();
-Advanced Features
-Matcher Statements: Customize return behavior based on input arguments.
 ```
-Custom Return Queues: Control ordered outputs across multiple calls.
-
-Invocation Tracking: Automatically record call counts per method.
-
-Fine-grained control without losing performance.
+# Advanced Features
+- Matcher Statements: Customize return behavior based on input arguments.
+- Custom Return Queues: Control ordered outputs across multiple calls.
+- Invocation Tracking: Automatically record call counts per method.
+- Fine-grained control without losing performance.
 
 # Installation
 CTM is header-only.
