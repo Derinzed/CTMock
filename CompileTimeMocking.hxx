@@ -11,32 +11,22 @@
 #include <exception>
 #include <utility>
 
-#define EXPAND(X) x
-
-#define CREATE_NAME(x) arg // Apply GET_TYPE to each pair of arguments in __VA_ARGS__
-#define CREATE_PAIR(x) x arg
-
-#define FOR_EACH_1(what, x) what(x)##1
-#define FOR_EACH_2(what, x, ...) what(x)##2, FOR_EACH_1(what, __VA_ARGS__)
-#define FOR_EACH_3(what, x, ...) what(x)##3, FOR_EACH_2(what, __VA_ARGS__)
-#define FOR_EACH_4(what, x, ...) what(x)##4, FOR_EACH_3(what, __VA_ARGS__)
-#define FOR_EACH_5(what, x, ...) what(x)##5, FOR_EACH_4(what, __VA_ARGS__)
-
-
-#define COUNT_ARGS(_1, _2, _3, _4, _5, N, ...) N
-#define COUNT_ARGS_IMPL(...) COUNT_ARGS(__VA_ARGS__, 5,4,3,2,1,0)
-
-#define FOR_EACH_N(N, what, ...) FOR_EACH_##N(what, __VA_ARGS__)
-#define FOR_EACH(what, number, ...) FOR_EACH_N(number, what, __VA_ARGS__)
-
-#define GET_ARG_NAMES(...) FOR_EACH(CREATE_NAME, COUNT_ARGS_IMPL(__VA_ARGS__), __VA_ARGS__)
-#define GET_ARG_PAIR(...) FOR_EACH(CREATE_PAIR, COUNT_ARGS_IMPL(__VA_ARGS__), __VA_ARGS__)
-
+//#define CTM_CLASS(className) class className{ public: 
 //#define COMPILE_MOCK(methodName, returnType, ...) static returnType methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<returnType, ##__VA_ARGS__>(invocation);}
+//#define COMPILE_MOCK_VOID(methodName, ...) static void methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<void, ##__VA_ARGS__>(invocation);}
+//#define CTM_CLASS_END };
+
+#define CM0(methodName, returnType) static returnType methodName() {CTMInvocation<> invocation(methodName);  return CTMHandler::getInstance().invokeMock<returnType>(invocation);}
+#define CM1(methodName, returnType, argType1) static returnType methodName(argType1 arg1) {CTMInvocation<argType1> invocation(methodName, arg1);  return CTMHandler::getInstance().invokeMock<returnType, argType1>(invocation);}
+#define CM2(methodName, returnType, argType1, argType2) static returnType methodName(argType1 arg1, argType2 arg2) {CTMInvocation<argType1, argType2> invocation(methodName, arg1, arg2);  return CTMHandler::getInstance().invokeMock<returnType, argType1, argType2>(invocation);}
+#define CM3(methodName, returnType, argType1, argType2, argType3) static returnType methodName(argType1 arg1, argType2 arg2, argType3 arg3) {CTMInvocation<argType1, argType2, argType3> invocation(methodName, arg1, arg2, arg3);  return CTMHandler::getInstance().invokeMock<returnType, argType1, argType2, argType3>(invocation);}
+#define CM4(methodName, returnType, argType1, argType2, argType3, argType4) static returnType methodName(argType1 arg1, argType2 arg2, argType3 arg3, argType4 arg4) {CTMInvocation<argType1, argType2, argType3, argType4> invocation(methodName, arg1, arg2, arg3, arg4);  return CTMHandler::getInstance().invokeMock<returnType, argType1, argType2, argType3, argType4>(invocation);}
+#define CM5(methodName, returnType, argType1, argType2, argType3, argType4, argType5) static returnType methodName(argType1 arg1, argType2 arg2, argType3 arg3, argType4 arg4, argType5 arg5) {CTMInvocation<argType1, argType2, argType3, argType4, argType5> invocation(methodName, arg1, arg2, arg3, arg4, arg5);  return CTMHandler::getInstance().invokeMock<returnType, argType1, argType2, argType3, argType4, argType5>(invocation);}
+#define GET_MACRO(_1, _2, _3, _4, _5, NAME, ...) NAME
+
 
 #define CTM_CLASS(className) class className{ public: 
-#define COMPILE_MOCK(methodName, returnType, ...) static returnType methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<returnType, ##__VA_ARGS__>(invocation);}
-#define COMPILE_MOCK_VOID(methodName, ...) static void methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<void, ##__VA_ARGS__>(invocation);}
+#define COMPILE_MOCK(methodName, returnType, ...) GET_MACRO(__VA_ARGS__ __VA_OPT__(,) CM5, CM4, CM3, CM2, CM1, CM0)(methodName, returnType __VA_OPT__(,) __VA_ARGS__ )
 #define CTM_CLASS_END };
 
 #pragma once
