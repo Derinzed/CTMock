@@ -193,6 +193,7 @@ namespace CompileTimeMocking {
 		}
 	private:
 		void* mMethod;
+		void* mObjectInstance;
 		int mMatchesMade = 0;
 		std::vector<CTMMatcher_Base*> mMatchers;
 		std::string mStatementName = "Default";
