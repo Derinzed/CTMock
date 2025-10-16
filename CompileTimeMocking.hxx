@@ -193,7 +193,6 @@ namespace CompileTimeMocking {
 		}
 	private:
 		void* mMethod;
-		void* mObjectInstance;
 		int mMatchesMade = 0;
 		std::vector<CTMMatcher_Base*> mMatchers;
 		std::string mStatementName = "Default";
@@ -405,7 +404,7 @@ namespace CompileTimeMocking {
 			}
 
 			std::vector<CTMMatcher_Base*> matcherVect;
-			(matcherVect.emplace_back((CTMMatcher_Base*)&matchers), ...);
+			(matcherVect.emplace_back(new std::decay_t<Ts>(matchers)), ...);
 			CTMMatcherStatement_Base* matcherStatement = new T(func, matcherVect);
 
 			mMatcherHandler.registerMatcherStatement<S>(matcherStatement, name);
@@ -422,7 +421,7 @@ namespace CompileTimeMocking {
 			}
 
 			std::vector<CTMMatcher_Base*> matcherVect;
-			(matcherVect.emplace_back((CTMMatcher_Base*)&matchers), ...);
+			(matcherVect.emplace_back(new std::decay_t<Ts>(matchers)), ...);
 			CTMMatcherStatement_Base* matcherStatement = new T(func, matcherVect);
 
 			mMatcherHandler.registerMatcherStatement<S>(matcherStatement, name);
