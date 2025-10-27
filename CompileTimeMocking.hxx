@@ -11,6 +11,10 @@
 #include <exception>
 #include <utility>
 
+//CTM requires unique void* for each method signature to resolve invokations
+//because of this, optomizations that merge identical functions must be disabled
+#pragma comment(linker, "/OPT:NOICF")
+
 //#define CTM_CLASS(className) class className{ public: 
 //#define COMPILE_MOCK(methodName, returnType, ...) static returnType methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<returnType, ##__VA_ARGS__>(invocation);}
 //#define COMPILE_MOCK_VOID(methodName, ...) static void methodName(GET_ARG_PAIR(__VA_ARGS__)) {CTMInvocation<__VA_ARGS__> invocation(methodName, GET_ARG_NAMES(__VA_ARGS__));  return CTMHandler::getInstance().invokeMock<void, ##__VA_ARGS__>(invocation);}
@@ -32,6 +36,7 @@
 #pragma once
 #define MOCK_EXPORTS _declspec(dllexport)
 #define CTM_MOCK CTMHandler::getInstance()
+#define CTM CTM_MOCK
 
 template<typename T, typename = void>
 struct is_container : std::false_type {};
@@ -266,6 +271,7 @@ namespace CompileTimeMocking {
 				if (statement.first == state)
 					return std::any_cast<CTMReturn<T>&>(statement.second);
 			}
+			throw std::runtime_error("Statement not found in matcherStatements");
 		}
 		std::list<std::pair<CTMMatcherStatement_Base*, std::any>> matcherStatements; //- New version to allow for all kinds of returns
 		//std::list<std::pair<CTMMatcherStatement_Base*, std::variant<CTMReturn<int>, CTMReturn<double>, CTMReturn<std::string>>>> matcherStatements;
